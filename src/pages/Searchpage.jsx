@@ -7,7 +7,9 @@ import NewsList from "../components/NewsList";
 
 const Searchpage = () => {
   const [keyword, setKeyword] = useState("");
-  const handleSearch = (searchKeyword) => setKeyword(searchKeyword);
+  const handleSearch = (searchKeyword) => {
+    setKeyword(searchKeyword)
+  };
 
   return (
     <Flex direction="column" minHeight="100vh">
@@ -33,7 +35,7 @@ const Searchpage = () => {
 
         {keyword && (
           <NewsList
-            url={`/news/search/${encodeURIComponent(keyword)}`}
+            url={`api/news/search/${encodeURIComponent(keyword)}`}
             isHome={false}
           />
         )}

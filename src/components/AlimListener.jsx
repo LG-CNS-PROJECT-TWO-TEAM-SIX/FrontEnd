@@ -15,7 +15,7 @@ export default function AlimListener() {
         const email = encodeURIComponent(user.email);
 
         const es = new EventSource(
-          `http://localhost:8080/api/alim/message?email=${email}`
+          `http://localhost:30081/api/alim/message?email=${email}`
         );
         esRef.current = es;
 

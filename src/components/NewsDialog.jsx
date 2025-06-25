@@ -45,11 +45,11 @@ const NewsDialog = ({ articles, loading, contextLabel = "뉴스", isHome }) => {
       try {
         const token = localStorage.getItem("accessToken");
         const res = await instance.post(
-          "/news/summary",
+          "api/news/summary",
           { link: articles[selectedIndex].link },
           { headers: { Authorization: `Bearer ${token}` } }
         );
-        setSummary(res.data.summary);
+        setSummary(res.data.data.summary);
       } catch {
         setSummaryError("요약 로딩에 실패했습니다.");
       } finally {

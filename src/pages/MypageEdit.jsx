@@ -23,6 +23,7 @@ import Footer from "../components/Footer";
 import useUser from "../lib/useUser";
 import { getUserInterests, editUser } from "../api/user_api";
 import { useForm } from "react-hook-form";
+import { jwtDecode } from "jwt-decode";
 
 const MypageEdit = () => {
   const { userLoading, user, isLoggedIn } = useUser();
@@ -50,7 +51,11 @@ const MypageEdit = () => {
   useEffect(() => {
     const interests = async () => {
       try {
-        const res = await getUserInterests();
+        const accessToken = localStorage.getItem("accessToken");
+        if (!accessToken) return null;
+        const decode = jwtDecode(accessToken);
+        const userId = decode?.userId;
+        const res = await getUserInterests(userId);
         setInterestsRes(res);
         setKeywords(res.map((i) => i.name));
       } catch (err) {
@@ -123,7 +128,7 @@ const MypageEdit = () => {
               <Field.ErrorText>Email is required.</Field.ErrorText>
             </Field.Root>
             <Field.Root>
-              <Field.Label>Keywords</Field.Label>
+              <Field.Label>Keywords</Field.Label>
               <Flex width={"100%"}>
                 <Input
                   placeholder="Ex) 경제, 축구, 반도체, AI"

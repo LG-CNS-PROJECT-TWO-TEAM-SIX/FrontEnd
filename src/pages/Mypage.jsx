@@ -24,8 +24,9 @@ import { Link } from "react-router-dom";
 
 import useUser from "../lib/useUser";
 import useUserFavorites from "../lib/useUserFavorites";
-import { getUserInterests } from "../api/user_api";
+import { getInterests } from "../api/user_api";
 import { useEffect, useState } from "react";
+import { jwtDecode } from "jwt-decode";
 
 const Mypage = () => {
   const { userLoading, user } = useUser();
@@ -35,7 +36,12 @@ const Mypage = () => {
   useEffect(() => {
     const interests = async () => {
       try {
-        const res = await getUserInterests();
+        const accessToken = localStorage.getItem("accessToken");
+        if (!accessToken) return null;
+        const decode = jwtDecode(accessToken);
+        const userId = decode?.userId;
+        const res = await getInterests(userId);
+        console.log(res);
         setInterestsRes(res);
       } catch (err) {
         console.error("❌ 유저 최애 가져오기 실패 ❌:", err);
@@ -72,7 +78,7 @@ const Mypage = () => {
                 관심 키워드
               </Text>
               <Wrap mb={6} justify="start">
-                {interestsRes.map((k, index) => (
+                {interestsRes?.map((k, index) => (
                   <WrapItem mr={1} key={index}>
                     <Tag.Root size="xl" borderRadius="md" variant="outline">
                       <Tag.Label>{k.name}</Tag.Label>

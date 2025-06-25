@@ -24,12 +24,12 @@ const NewsList = ({ url, isHome }) => {
         res = await instance.get(`${url}/${start}`, {
           headers: { Authorization: `Bearer ${accessToken}` },
         });
-        setArticles(res.data.newsList);
+        setArticles(res.data.data.newsList);
       } else {
         res = await instance.get(`${url}`, {
           headers: { Authorization: `Bearer ${accessToken}` },
         });
-        setArticles(res.data);
+        setArticles(res.data.data);
       }
     } catch (err) {
       console.error(err);

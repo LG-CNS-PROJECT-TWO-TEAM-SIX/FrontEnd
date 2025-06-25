@@ -1,6 +1,6 @@
 import instance from './axiosInstance';
 
-const USER_PREFIX = '/user/v1';
+const USER_PREFIX = '/api/user/v1';
 
 //회원가입
 export const signup = async ({ email, password, name, interests }) => {
@@ -33,16 +33,18 @@ export const login = async ({ email, password }) => {
   }
 };
 
-//로그아웃
 export const logout = async () => {
+  // 1. 클라이언트 상태 먼저 정리
+  localStorage.removeItem('accessToken');
+  delete instance.defaults.headers.common.Authorization;
+
   try {
+    // 2. 서버에 로그아웃 통보 (실패해도 크게 상관없음)
     const res = await instance.delete(`${USER_PREFIX}/auth/logout`);
-    localStorage.removeItem('accessToken');
-    delete instance.defaults.headers.common.Authorization;
     return res.data.data;
   } catch (error) {
-    console.error('logout error:', error);
-    throw error;
+    console.warn('logout error (무시 가능):', error.response?.status);
+    return null; // 에러를 굳이 던지지 않아도 됨
   }
 };
 
@@ -63,7 +65,10 @@ export const checkEmail = async (email) => {
 //내 정보 조회
 export const getMe = async () => {
   try {
-    const res = await instance.get(`${USER_PREFIX}/user`);
+    const token = localStorage.getItem('accessToken');
+    const res = await instance.get(`${USER_PREFIX}/user`, {headers: {
+        Authorization: `Bearer ${token}`
+      }});
     return res.data.data;
   } catch (error) {
     console.error('getMe error:', error);
@@ -74,7 +79,10 @@ export const getMe = async () => {
 //회원 정보 수정
 export const editUser = async (userData) => {
   try {
-    const res = await instance.put(`${USER_PREFIX}/user`, userData);
+    const token = localStorage.getItem('accessToken');
+    const res = await instance.put(`${USER_PREFIX}/user`, userData,{headers: {
+        Authorization: `Bearer ${token}`
+      }});
     return res.data.data;
   } catch (error) {
     console.error('editUser error:', error);
@@ -85,7 +93,10 @@ export const editUser = async (userData) => {
 //회원 탈퇴
 export const deleteUser = async () => {
   try {
-    const res = await instance.delete(`${USER_PREFIX}/user`);
+    const token = localStorage.getItem('accessToken');
+    const res = await instance.delete(`${USER_PREFIX}/user`,{headers: {
+        Authorization: `Bearer ${token}`
+      }});
     return res.data.data;
   } catch (error) {
     console.error('deleteUser error:', error);
@@ -96,7 +107,10 @@ export const deleteUser = async () => {
 //특정 사용자 조회
 export const getUserById = async (userId) => {
   try {
-    const res = await instance.get(`${USER_PREFIX}/user/${userId}`);
+    const token = localStorage.getItem('accessToken');
+    const res = await instance.get(`${USER_PREFIX}/user/${userId}`,{headers: {
+        Authorization: `Bearer ${token}`
+      }});
     return res.data.data;
   } catch (error) {
     console.error('getUserById error:', error);
@@ -120,8 +134,11 @@ export const addInterest = async (interests) => {
 
 export const getInterests = async (userId) => {
   try {
-    const res = await instance.get(`${USER_PREFIX}/interest/${userId}`);
-    return res.data.data;
+    const token = localStorage.getItem('accessToken');
+    const res = await instance.get(`${USER_PREFIX}/interest/${userId}`,{headers: {
+        Authorization: `Bearer ${token}`
+      }});
+    return res.data;
   } catch (error) {
     console.error('getInterests error:', error);
     throw error;
@@ -140,10 +157,15 @@ export const deleteInterests = async (userId) => {
 
 export const getUserInterests = getInterests;
 export const deleteAccount      = deleteUser;
-export const getUserFavorites = async (userId) => {
+
+export const getUserFavorites = async ({ queryKey }) => {
+  const [, userId] = queryKey; // ["favorites", userId] 구조
   try {
-    const res = await instance.get(`${USER_PREFIX}/favorite/${userId}`);
-    return res.data.data;
+    const token = localStorage.getItem("accessToken");
+    const res = await instance.get(`${USER_PREFIX}/favorites/${userId}`,{ headers: {
+        Authorization: `Bearer ${token}`
+      }});
+    return res.data?.data ?? [];
   } catch (error) {
     console.error('getUserFavorites error:', error);
     throw error;

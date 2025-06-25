@@ -4,6 +4,7 @@ import Footer from "../components/Footer";
 import NewsList from "../components/NewsList"; // 경로 맞춰주세요
 import { getUserInterests } from "../api/user_api";
 import React, { useEffect, useState } from "react";
+import { jwtDecode } from "jwt-decode";
 
 const Home = () => {
   const [interests, setInterests] = useState([]);
@@ -12,8 +13,12 @@ const Home = () => {
   useEffect(() => {
     const fetchInterests = async () => {
       try {
-        const data = await getUserInterests();
-        setInterests(data);
+        const accessToken = localStorage.getItem("accessToken");
+        if (!accessToken) return null;
+        const decode = jwtDecode(accessToken);
+        const userId = decode?.userId;
+        const res = await getUserInterests(userId);
+        setInterests(res);
       } catch {
         setInterests([]);
       } finally {
@@ -39,7 +44,7 @@ const Home = () => {
             </Text>
           )}
         </VStack>
-        <NewsList url={`/news/ai`} isHome={true} />
+        <NewsList url={`/api/news/ai`} isHome={true} />
       </Flex>
       <Footer />
     </Box>
