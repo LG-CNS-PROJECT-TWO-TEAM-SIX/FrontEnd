@@ -165,7 +165,8 @@ export const getUserFavorites = async ({ queryKey }) => {
     const res = await instance.get(`${USER_PREFIX}/favorites/${userId}`,{ headers: {
         Authorization: `Bearer ${token}`
       }});
-    return res.data?.data ?? [];
+    console.log("user fav res: ",res);
+    return res.data ?? [];
   } catch (error) {
     console.error('getUserFavorites error:', error);
     throw error;

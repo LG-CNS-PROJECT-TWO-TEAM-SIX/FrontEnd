@@ -16,7 +16,6 @@ const NewsListItem = ({
   const [liked, setLiked] = useState(initiallyLiked);
   const [favoriteId, setFavoriteId] = useState(initialFavId);
   const [loading, setLoading] = useState(false);
-
   const handleHeartClick = async (e) => {
     e.stopPropagation();
     if (loading) return;
@@ -33,9 +32,10 @@ const NewsListItem = ({
 
       if (!liked) {
         const fav = await addFavorite(payload);
-        setFavoriteId(fav.id);
+        console.log("fav: " ,fav);
+        setFavoriteId(fav.data.id);
         setLiked(true);
-      } else {
+      } else {        
         await removeFavorite(favoriteId);
         setLiked(false);
         setFavoriteId(null);

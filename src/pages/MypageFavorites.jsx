@@ -33,7 +33,7 @@ const MypageFavorites = () => {
       const accessToken = localStorage.getItem("accessToken");
       const decode = jwtDecode(accessToken);
       const userId = decode?.userId;
-      const res = await instance.get(`${userId}/favorites`, {
+      const res = await instance.get(`/api/user/v1/favorites/${userId}`, {
         headers: { Authorization: `Bearer ${accessToken}` },
       });
       setArticles(res.data);
@@ -56,11 +56,11 @@ const MypageFavorites = () => {
       try {
         const token = localStorage.getItem("accessToken");
         const res = await instance.post(
-          "/news/summary",
+          "/api/news/summary",
           { link: articles[selectedIndex].newsLink },
           { headers: { Authorization: `Bearer ${token}` } }
         );
-        setSummary(res.data.summary);
+        setSummary(res.data.data.summary);
       } catch {
         setSummaryError("요약 로딩에 실패했습니다.");
       } finally {
@@ -69,14 +69,16 @@ const MypageFavorites = () => {
     })();
   }, [selectedIndex, articles]);
   useEffect(() => {
+    fetchNews();
     const loadFavoritesAndArticles = async () => {
       try {
         setLoadingArticles(true);
         const favs = await getMyFavorites();
+        console.log("getMyFavorites() 결과:", favs);
         const map = {};
-        favs.forEach((f) => (map[f.newsLink] = f));
+        favs.forEach((f) => (map[f.id] = f));
         setFavoritesMap(map);
-
+        
         const accessToken = localStorage.getItem("accessToken");
         const decode = jwtDecode(accessToken);
         const userId = decode?.userId;
@@ -100,19 +102,19 @@ const MypageFavorites = () => {
         <NavBar />
       </Box>
       <Box flex="1" mx={12}>
-        <VStack mx={4} align="start">
+        <VStack mx={4} align="start" >
           <Text fontSize="3xl" fontWeight="bold" mb={4}>
             좋아요한 뉴스 모아보기
           </Text>
           {articles.map((article, index) => {
-            const fav = favoritesMap[article.newsLink];
+            const fav = favoritesMap[article.id]; // 정확히 이 article의 favorite
             return (
               <Dialog.Root
                 key={article.newsLink}
                 open={selectedIndex === index}
                 onOpenChange={(open) => open || setSelectedIndex(null)}
               >
-                <Box onClick={() => setSelectedIndex(index)} cursor="pointer">
+                <Box onClick={() => setSelectedIndex(index)} cursor="pointer" width={"100%"}>
                   <Dialog.Trigger asChild>
                     <NewsListItem
                       link={article.newsLink}
