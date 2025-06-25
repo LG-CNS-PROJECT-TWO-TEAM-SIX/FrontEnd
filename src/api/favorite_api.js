@@ -1,7 +1,6 @@
 import instance from "./axiosInstance";
 import { jwtDecode } from "jwt-decode";
 
-//JWT, UserId
 function authHeader() {
     const token = localStorage.getItem("accessToken");
     const { userId } = jwtDecode(token);
@@ -17,7 +16,7 @@ function authHeader() {
 export async function getMyFavorites() {
     const { headers, userId } = authHeader();
     const res = await instance.get(`/${userId}/favorites`, { headers });
-    return res.data;
+    return res.data.data;
 }
 
 const FAVORITE_PREFIX = "/user/v1";
