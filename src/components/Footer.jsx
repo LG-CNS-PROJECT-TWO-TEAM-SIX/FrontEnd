@@ -7,6 +7,7 @@ import {
   HStack,
   Link,
   Icon,
+  SimpleGrid,
 } from "@chakra-ui/react";
 import { FaFigma, FaGithub } from "react-icons/fa";
 import logo from "../assets/Logo.png";
@@ -31,7 +32,7 @@ const Footer = () => {
             />
           </Link>
           <Link
-            href="https://github.com/LG-CNS-TEAM-8"
+            href="https://github.com/LG-CNS-PROJECT-TWO-TEAM-SIX"
             aria-label="Github link"
             target="_blank"
           >
@@ -71,52 +72,31 @@ const Footer = () => {
           gap={{ base: 10, md: 60 }}
         >
           {/* Frontend */}
-          <VStack align="start" spacing={1}>
-            <Text fontWeight="bold" mb={2}>
-              Frontend
-            </Text>
-            <Link
-              href="https://github.com/ku0629"
-              target="_blank"
-              color="white"
-            >구민</Link>
-            <Link
-              href="https://github.com/5ohmydays5"
-              target="_blank"
-              color="white"
-            >오장현</Link>
-            <Link
-              href="https://github.com/Junho0225"
-              target="_blank"
-              color="white"
-            >이준호</Link>
+          <VStack align="start" spacing={2}>
+            <Text fontWeight="bold">Frontend</Text>
+            <Link href="https://github.com/dldh1218" target="_blank" color="white"> 정준희</Link>
           </VStack>
 
           {/* Backend */}
-          <VStack align="start" spacing={1} pr={36}>
-            <Text fontWeight="bold" mb={2}>
-              Backend
-            </Text>
-            <Link
-              href="https://github.com/Bucoco"
-              target="_blank"
-              color="white"
-            >남윤호</Link>
-
-            <Link
-              href="https://github.com/haribonyam"
-              target="_blank"
-              color="white"
-            >심규환</Link>
-            <Link
-              href="https://github.com/syjungsuyeon"
-              target="_blank"
-              color="white"
-            >정수연</Link>
+          <VStack align="start" spacing={2} pr={36}>
+            <Text fontWeight="bold">Backend</Text>
+            <HStack spacing={12} align="start">
+              {/* 왼쪽 열 */}
+              <VStack align="start" spacing={2}>
+                <Link href="https://github.com/ku0629" target="_blank" color="white">구민</Link>
+                <Link href="https://github.com/manbron236" target="_blank" color="white">조민준</Link>
+                <Link href="https://github.com/pjy2163" target="_blank" color="white">박지영</Link>
+              </VStack>
+              {/* 오른쪽 열 */}
+              <VStack align="start" spacing={2}>
+                <Link href="https://github.com/haribonyam" target="_blank" color="white">심규환</Link>
+                <Link href="https://github.com/leenagyoung" target="_blank" color="white">이나경</Link>
+              </VStack>
+            </HStack>
           </VStack>
         </Flex>
       </Flex>
-    </Box>
+    </Box >
   );
 };
 

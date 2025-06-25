@@ -17,17 +17,21 @@ function authHeader() {
 export async function getMyFavorites() {
     const { headers, userId } = authHeader();
     const res = await instance.get(`/${userId}/favorites`, { headers });
-    return res.data; // array of FavoriteResponseDto
-}
-
-export async function addFavorite({ newsLink, newsTitle, newsSummary, newsThumbnail, newsCategory }) {
-    const { headers, userId } = authHeader();
-    const payload = { userId, newsLink, newsTitle, newsSummary, newsThumbnail, newsCategory };
-    const res = await instance.post("/favorite", payload, { headers });
     return res.data;
 }
 
-export async function removeFavorite(favoriteId) {
-    const { headers } = authHeader();
-    await instance.delete(`/favorite/${favoriteId}`, { headers });
-}
+const FAVORITE_PREFIX = "/user/v1";
+
+export const addFavorite = async (newsId) => {
+  const token = localStorage.getItem("accessToken");
+  return instance.post(`${FAVORITE_PREFIX}/favorite`, { newsId }, {
+    headers: { Authorization: `Bearer ${token}` }
+  });
+};
+
+export const removeFavorite = async (favoriteId) => {
+  const token = localStorage.getItem("accessToken");
+  return instance.delete(`${FAVORITE_PREFIX}/favorite/${favoriteId}`, {
+    headers: { Authorization: `Bearer ${token}` }
+  });
+};

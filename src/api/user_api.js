@@ -1,217 +1,104 @@
-import { jwtDecode } from "jwt-decode";
+import axios from 'axios';
+import { jwtDecode } from 'jwt-decode';
 
-import instance from "./axiosInstance";
+const API_ROOT = 'http://localhost:8080';  // ← 여기까지만
 
-// UNAUTHORIZED APIS
+// 인증 불필요
+const plain = axios.create({
+  baseURL: API_ROOT,
+  headers: { 'Content-Type': 'application/json' },
+  withCredentials: true,   // 쿠키 기반 리프레시 토큰 API(POST /token) 도 이걸 써야 받을 수 있음
+});
 
-export const login = async ({ email, password }) => {
-  console.log("Login API 호출");
-  console.log("Email :" + email);
-  console.log("Password :" + password);
-  try {
-    const response = await instance.post(
-      "/login",
-      {
-        email,
-        password,
-      },
-      { headers: { "Content-Type": "application/json" } }
-    );
-    return response.data;
-  } catch (error) {
-    throw error.response ? error.response.data : error;
-  }
+// 인증 필요
+const auth = axios.create({
+  baseURL: API_ROOT,
+  headers: { 'Content-Type': 'application/json' },
+  withCredentials: true,
+});
+auth.interceptors.request.use(cfg => {
+  const token = localStorage.getItem('accessToken');
+  console.log('[Auth Interceptor] token:', token);
+  if (token) cfg.headers.Authorization = `Bearer ${token}`;
+  return cfg;
+});
+
+// ——— auth-less APIs ———
+
+// 이메일 중복 확인
+export const checkEmail = async email => {
+  // 반드시 v1 포함
+  const { data } = await plain.post(
+    '/api/user/v1/auth/email',
+    { email }
+  );
+  return data;
 };
 
-export const signup = async ({ email, password, name, interests }) => {
-  console.log("Signup API 호출");
-  console.log("Email :" + email);
-  console.log("Password :" + password);
-  console.log("Name :" + name);
-  try {
-    const response = await instance.post(
-      "/sign-up",
-      {
-        email,
-        password,
-        name,
-        interests,
-      },
-      { headers: { "Content-Type": "application/json" } }
-    );
-    return response.data;
-  } catch (error) {
-    throw error.response ? error.response.data : error;
-  }
+// 로그인
+export const login = async creds => {
+  const { data } = await plain.post(
+    '/api/user/v1/auth/login',
+    creds
+  );
+  const tok = data.result?.accessToken;
+  if (tok) localStorage.setItem('accessToken', tok);
+  return data;
 };
 
-
-export const checkEmail = async (email) => {
-  console.log("Check Email API 호출:", email);
-  try {
-    const response = await instance.post(
-      "/email",
-      { email },
-      { headers: { "Content-Type": "application/json" } }
-    );
-    return response.data;         
-  } catch (error) {
-    throw error.response?.data || error;
-  }
+// 회원가입
+export const signup = async info => {
+  const { data } = await plain.post(
+    '/api/user/v1/auth/sign-up',
+    info
+  );
+  return data;
 };
 
+// ——— auth-required APIs ———
 
-export const addInterest = async ({ userId, keywords }) => {
-  console.log("Add Interest API 호출");
-  console.log("UserId :" + userId);
-  console.log("Name :" + keywords);
-  try {
-    const response = await instance.post(
-      "/interest",
-      {
-        userId,
-        name: keywords,
-      },
-      { headers: { "Content-Type": "application/json" } }
-    );
-    return response.data;
-  } catch (error) {
-    throw error.response ? error.response.data : error;
-  }
-};
-
-export const deleteInterest = async ({ userId, removeKeyword }) => {
-  console.log("Delete Interest API 호출");
-  console.log("UserId :" + userId);
-  console.log("Name :" + removeKeyword);
-  try {
-    const response = await instance.delete(`/interest/delete/${userId}`, {
-      data: {
-        name: removeKeyword,
-      },
-      headers: { "Content-Type": "application/json" },
-    });
-    return response.data;
-  } catch (error) {
-    throw error.response ? error.response.data : error;
-  }
-};
-
-// AUTHORIZED APIS
 export const getMe = async () => {
-  try {
-    const accessToken = localStorage.getItem("accessToken");
-    console.log("accessToken : " + accessToken);
-    const decode = jwtDecode(accessToken);
-    console.log("userId : " + decode.userId);
-
-    const response = await instance.get(`/user/${decode.userId}`, {
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${accessToken}`,
-      },
-    });
-    return response.data;
-  } catch (error) {
-    console.log(error);
-    throw error.response ? error.response.data : error;
-  }
-};
-
-export const editUser = async ({ name, email, interests }) => {
-  try {
-    const accessToken = localStorage.getItem("accessToken");
-    const response = await instance.put(
-      `/user`,
-      { name, email, interests },
-      {
-        headers: {
-          "Content-Type": "application/json",
-          Authorization: `Bearer ${accessToken}`,
-        },
-      }
-    );
-    return response.data;
-  } catch (error) {
-    console.log(error);
-    throw error.response ? error.response.data : error;
-  }
-};
-
-export const getUserFavorites = async () => {
-  try {
-    const accessToken = localStorage.getItem("accessToken");
-    console.log("accessToken : " + accessToken);
-    const decode = jwtDecode(accessToken);
-    console.log("userId : " + decode.userId);
-
-    const response = await instance.get(`/${decode.userId}/favorites`, {
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${accessToken}`,
-      },
-    });
-    return response.data;
-  } catch (error) {
-    console.log(error);
-    throw error.response ? error.response.data : error;
-  }
+  const { data } = await auth.get('/api/user/v1/user');
+  return data.result;
 };
 
 export const logout = async () => {
-  try {
-    const refreshToken = localStorage.getItem("refreshToken");
-    const accessToken = localStorage.getItem("accessToken");
-
-    const response = await instance.delete("/logout", {
-      headers: {
-        refreshToken: `${refreshToken}`,
-        Authorization: `Bearer ${accessToken}`,
-      },
-    });
-    localStorage.removeItem("accessToken");
-    localStorage.removeItem("refreshToken");
-    return response.data;
-  } catch (error) {
-    console.log(error);
-    throw error.response ? error.response.data : error;
-  }
+  const { data } = await auth.delete('/api/user/v1/auth/logout');
+  return data;
 };
 
+// 회원 정보 수정
+export const editUser = async ({ name, email, interests }) => {
+  return auth.put('/user', { name, email, interests });
+};
+
+// 회원 탈퇴
 export const deleteAccount = async () => {
-  try {
-    const accessToken = localStorage.getItem("accessToken");
-
-    const response = await instance.delete("/user", {
-      headers: {
-        Authorization: `Bearer ${accessToken}`,
-      },
-    });
-    localStorage.removeItem("accessToken");
-    localStorage.removeItem("refreshToken");
-    return response.data;
-  } catch (error) {
-    console.log(error);
-    throw error.response ? error.response.data : error;
-  }
+  return auth.delete('/user');
 };
 
-export const getUserInterests = async () => {
-  try {
-    const accessToken = localStorage.getItem("accessToken");
-    console.log("accessToken : " + accessToken);
-    const decode = jwtDecode(accessToken);
-    console.log("userId : " + decode.userId);
+// 내 좋아요 목록 조회
+export const getUserFavorites = async () => {
+  const token = localStorage.getItem('accessToken');
+  const { userId } = jwtDecode(token);
+  return auth.get(`/user/${userId}/favorites`);
+};
 
-    const response = await instance.get(`/interest/${decode.userId}`, {
-      headers: {
-        "Content-Type": "application/json",
-        Authorization: `Bearer ${accessToken}`,
-      },
-    });
-    return response.data;
-  } catch (error) {
-    console.log(error);
-    throw error.response ? error.response.data : error;
-  }
+// 내 관심사 조회
+export const getUserInterests = async () => {
+  const token = localStorage.getItem('accessToken');
+  const { userId } = jwtDecode(token);
+  return auth.get(`/interest/${userId}`);
+};
+
+// 관심사 추가
+export const addInterest = async ({ userId, keywords }) => {
+  return auth.post('/interest', { userId, name: keywords });
+};
+
+// 관심사 삭제
+export const deleteInterest = async ({ userId, removeKeyword }) => {
+  return auth.delete(`/interest/delete/${userId}`, {
+    data: { name: removeKeyword }
+  });
 };

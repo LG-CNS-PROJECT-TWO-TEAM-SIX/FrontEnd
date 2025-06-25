@@ -1,0 +1,10 @@
+[
+  {
+    "userId": 1,
+    "keywords": ["React", "Kafka", "SSE"]
+  },
+  {
+    "userId": 2,
+    "keywords": ["Spring", "JPA"]
+  }
+]

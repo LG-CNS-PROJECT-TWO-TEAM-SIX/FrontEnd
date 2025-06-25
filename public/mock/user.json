@@ -1,0 +1,16 @@
+[
+  {
+    "id": 1,
+    "email": "junhee@example.com",
+    "name": "정준희",
+    "password": "1234",
+    "interests": ["React", "Kafka"]
+  },
+  {
+    "id": 2,
+    "email": "minjun@example.com",
+    "name": "조민준",
+    "password": "abcd",
+    "interests": ["Spring", "MySQL"]
+  }
+]

@@ -1,0 +1,16 @@
+[
+  {
+    "userId": 1,
+    "favoriteId": 101,
+    "title": "서울 야경 명소",
+    "description": "남산타워의 야경이 정말 멋집니다.",
+    "imageUrl": "https://example.com/image1.jpg"
+  },
+  {
+    "userId": 2,
+    "favoriteId": 102,
+    "title": "한강 야경",
+    "description": "밤의 한강은 조용하고 평화로워요.",
+    "imageUrl": "https://example.com/image2.jpg"
+  }
+]

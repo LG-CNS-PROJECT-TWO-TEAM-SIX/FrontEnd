@@ -1,0 +1,14 @@
+[
+  {
+    "email": "junhee@example.com",
+    "action": "SIGNUP",
+    "name": "정준희",
+    "eventTime": "2025-06-23T10:15:00"
+  },
+  {
+    "email": "minjun@example.com",
+    "action": "LOGIN",
+    "name": "조민준",
+    "eventTime": "2025-06-23T10:20:00"
+  }
+]

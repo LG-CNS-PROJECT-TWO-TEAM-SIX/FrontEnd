@@ -13,6 +13,9 @@ import StartPage from "./pages/StartPage";
 import SignupKeywordPage from "./pages/SignupKeywordPage";
 import { QueryClient, QueryClientProvider } from "@tanstack/react-query";
 import MypageFavorites from "./pages/MypageFavorites";
+import { ToastContainer } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
+import AlimListener from "./components/AlimListener";
 
 function App() {
   const queryClient = new QueryClient();
@@ -22,6 +25,8 @@ function App() {
       <Provider>
         <BrowserRouter>
           <div className="App">
+            <AlimListener /> {/* 알림 연결 */}
+            <ToastContainer /> {/* 알림 UI */}
             <Routes>
               <Route path="/" element={<StartPage />} />
               <Route path="/signup" element={<SignupPage />} />
