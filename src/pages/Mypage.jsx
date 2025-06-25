@@ -24,7 +24,7 @@ import { Link } from "react-router-dom";
 
 import useUser from "../lib/useUser";
 import useUserFavorites from "../lib/useUserFavorites";
-import { getInterests } from "../api/user_api";
+import { getUserInterests } from "../api/user_api";
 import { useEffect, useState } from "react";
 import { jwtDecode } from "jwt-decode";
 
@@ -40,8 +40,7 @@ const Mypage = () => {
         if (!accessToken) return null;
         const decode = jwtDecode(accessToken);
         const userId = decode?.userId;
-        const res = await getInterests(userId);
-        console.log(res);
+        const res = await getUserInterests(userId);
         setInterestsRes(res);
       } catch (err) {
         console.error("❌ 유저 최애 가져오기 실패 ❌:", err);

@@ -107,7 +107,6 @@ const MypageFavorites = () => {
             좋아요한 뉴스 모아보기
           </Text>
           {articles.map((article, index) => {
-            const fav = favoritesMap[article.id]; // 정확히 이 article의 favorite
             return (
               <Dialog.Root
                 key={article.newsLink}
@@ -123,7 +122,7 @@ const MypageFavorites = () => {
                       description={article.newsSummary}
                       thumbnail={article.newsThumbnail}
                       initiallyLiked={true}
-                      initialFavId={fav?.id}
+                      initialFavId={article.id}
                     />
                   </Dialog.Trigger>
                 </Box>

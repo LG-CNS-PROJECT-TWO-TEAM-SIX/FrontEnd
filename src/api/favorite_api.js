@@ -31,7 +31,6 @@ export const addFavorite = async (payload) => {
 };
 
 export const removeFavorite = async (favoriteId) => {
-  console.log("favID", favoriteId);
   const token = localStorage.getItem("accessToken");
   return instance.delete(`${FAVORITE_PREFIX}/favorite/${favoriteId}`, {
     headers: { Authorization: `Bearer ${token}` }
