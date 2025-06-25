@@ -82,7 +82,7 @@ const MypageFavorites = () => {
         const accessToken = localStorage.getItem("accessToken");
         const decode = jwtDecode(accessToken);
         const userId = decode?.userId;
-        const res = await instance.get(`${userId}/favorites`, {
+        const res = await instance.get(`api/user/v1/favorites/${userId}`, {
           headers: { Authorization: `Bearer ${accessToken}` },
         });
         setArticles(res.data);

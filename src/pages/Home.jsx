@@ -5,6 +5,8 @@ import NewsList from "../components/NewsList"; // 경로 맞춰주세요
 import { getUserInterests } from "../api/user_api";
 import React, { useEffect, useState } from "react";
 import { jwtDecode } from "jwt-decode";
+import AlimListener from "../components/AlimListener";
+import { ToastContainer } from "react-toastify";
 
 const Home = () => {
   const [interests, setInterests] = useState([]);
@@ -30,6 +32,7 @@ const Home = () => {
 
   return (
     <Box width="100%" minHeight="100vh" display="flex" flexDirection="column">
+
       <NavBar />
       <Flex direction="column" alignItems="start" mx={12} mt={0} flex="1">
         <VStack mx={4} align="start" mb={8}>

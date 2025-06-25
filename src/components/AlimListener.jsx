@@ -10,13 +10,26 @@ export default function AlimListener() {
 
     async function connect() {
       try {
-        const user = await getMe();
-        if (!isMounted) return;
-        const email = encodeURIComponent(user.email);
+        let email = localStorage.getItem("email")
+        if (!email){
+          const user = await getMe();
+          if(!user){
+            return null;
+          }
+          email = encodeURIComponent(user.email);
+        }
+        // const user = await getMe();
+        // if (!isMounted) return;
+        // if(user){
+        //    email = encodeURIComponent(user.email);
+        // }else{
+        //   email = localStorage.getItem("email");
+        // }
 
         const es = new EventSource(
           `http://localhost:30081/api/alim/message?email=${email}`
         );
+        console.log("esRef",esRef);
         esRef.current = es;
 
         es.addEventListener("INIT", e => {

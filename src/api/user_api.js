@@ -9,6 +9,7 @@ export const signup = async ({ email, password, name, interests }) => {
       `${USER_PREFIX}/auth/sign-up`,
       { email, password, name, interests }
     );
+    localStorage.setItem("email",email);
     return res.data.data;
   } catch (error) {
     console.error('signup error:', error);
@@ -36,6 +37,8 @@ export const login = async ({ email, password }) => {
 export const logout = async () => {
   // 1. 클라이언트 상태 먼저 정리
   localStorage.removeItem('accessToken');
+  localStorage.removeItem('email');
+
   delete instance.defaults.headers.common.Authorization;
 
   try {
@@ -66,6 +69,9 @@ export const checkEmail = async (email) => {
 export const getMe = async () => {
   try {
     const token = localStorage.getItem('accessToken');
+    if(!token){
+      return null;
+    }
     const res = await instance.get(`${USER_PREFIX}/user`, {headers: {
         Authorization: `Bearer ${token}`
       }});
